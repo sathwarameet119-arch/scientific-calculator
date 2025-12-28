@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Windows Style Calculator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    font-family:Segoe UI, Arial;
+}
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f2f2f2;
+}
+
+.calculator{
+    width:360px;
+    background:#ffffff;
+    border-radius:14px;
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+    padding:12px;
+}
+
+.modes{
+    display:flex;
+    gap:6px;
+    margin-bottom:8px;
+}
+
+.modes button{
+    flex:1;
+    padding:8px;
+    border:none;
+    border-radius:8px;
+    background:#ddd;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.modes .active{
+    background:#4caf50;
+    color:white;
+}
+
+.display{
+    height:70px;
+    font-size:36px;
+    text-align:right;
+    padding:10px;
+    border-radius:10px;
+    background:#fafafa;
+    margin-bottom:10px;
+    overflow:hidden;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+button{
+    height:48px;
+    font-size:16px;
+    border:none;
+    border-radius:10px;
+    background:#f0f0f0;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#e0e0e0;
+}
+
+.equal{
+    background:#7b2cbf;
+    color:white;
+    font-size:18px;
+}
+
+.zero{
+    grid-column:span 2;
+}
+
+.scientific{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<div class="modes">
+    <button id="bStd" class="active" onclick="mode('std')">Standard</button>
+    <button id="bSci" onclick="mode('sci')">Scientific</button>
+</div>
+
+<div class="display" id="display">0</div>
+
+<!-- STANDARD -->
+<div class="buttons" id="std">
+    <button onclick="percent()">%</button>
+    <button onclick="clearAll()">C</button>
+    <button onclick="del()">⌫</button>
+    <button onclick="op('/')">÷</button>
+
+    <button onclick="recip()">1/x</button>
+    <button onclick="square()">x²</button>
+    <button onclick="sqrt()">√x</button>
+    <button onclick="op('*')">×</button>
+
+    <button onclick="num(7)">7</button>
+    <button onclick="num(8)">8</button>
+    <button onclick="num(9)">9</button>
+    <button onclick="op('-')">−</button>
+
+    <button onclick="num(4)">4</button>
+    <button onclick="num(5)">5</button>
+    <button onclick="num(6)">6</button>
+    <button onclick="op('+')">+</button>
+
+    <button onclick="sign()">±</button>
+    <button onclick="num(1)">1</button>
+    <button onclick="num(2)">2</button>
+    <button onclick="num(3)">3</button>
+
+    <button class="zero" onclick="num(0)">0</button>
+    <button onclick="dot()">.</button>
+    <button class="equal" onclick="calc()">=</button>
+</div>
+
+<!-- SCIENTIFIC -->
+<div class="buttons scientific" id="sci">
+
+    <button onclick="sin()">sin</button>
+    <button onclick="cos()">cos</button>
+    <button onclick="tan()">tan</button>
+    <button onclick="constPi()">π</button>
+
+    <button onclick="asin()">sin⁻¹</button>
+    <button onclick="acos()">cos⁻¹</button>
+    <button onclick="atan()">tan⁻¹</button>
+    <button onclick="constE()">e</button>
+
+    <button onclick="square()">x²</button>
+    <button onclick="cube()">x³</button>
+    <button onclick="fact()">n!</button>
+    <button onclick="percent()">%</button>
+
+    <button onclick="log()">log</button>
+    <button onclick="ln()">ln</button>
+    <button onclick="recip()">1/x</button>
+    <button onclick="clearAll()">C</button>
+
+    <button onclick="num(7)">7</button>
+    <button onclick="num(8)">8</button>
+    <button onclick="num(9)">9</button>
+    <button onclick="op('/')">÷</button>
+
+    <button onclick="num(4)">4</button>
+    <button onclick="num(5)">5</button>
+    <button onclick="num(6)">6</button>
+    <button onclick="op('*')">×</button>
+
+    <button onclick="num(1)">1</button>
+    <button onclick="num(2)">2</button>
+    <button onclick="num(3)">3</button>
+    <button onclick="op('-')">−</button>
+
+    <button class="zero" onclick="num(0)">0</button>
+    <button onclick="dot()">.</button>
+    <button onclick="op('+')">+</button>
+    <button class="equal" onclick="calc()">=</button>
+</div>
+
+</div>
+
+<script>
+let d=document.getElementById("display");
+let a=null,opn=null;
+
+function mode(m){
+    std.style.display="none";
+    sci.style.display="none";
+    document.getElementById(m).style.display="grid";
+    bStd.classList.remove("active");
+    bSci.classList.remove("active");
+    m==="std"?bStd.classList.add("active"):bSci.classList.add("active");
+}
+
+function num(n){ if(d.innerText==="0") d.innerText=""; d.innerText+=n; }
+function dot(){ if(!d.innerText.includes(".")) d.innerText+="."; }
+function clearAll(){ d.innerText="0"; a=null; opn=null; }
+function del(){ d.innerText=d.innerText.slice(0,-1)||"0"; }
+
+function op(o){ a=Number(d.innerText); opn=o; d.innerText="0"; }
+
+function calc(){
+    if(a===null||opn===null) return;
+    let b=Number(d.innerText),r=0;
+    if(opn==="+") r=a+b;
+    if(opn==="−"||opn==="-" ) r=a-b;
+    if(opn==="×"||opn==="*") r=a*b;
+    if(opn==="÷"||opn==="/") r=a/b;
+    d.innerText=Number(r.toFixed(10));
+    a=null; opn=null;
+}
+
+function percent(){ d.innerText=Number(d.innerText)/100; }
+function recip(){ d.innerText=1/Number(d.innerText); }
+function square(){ d.innerText=Math.pow(Number(d.innerText),2); }
+function cube(){ d.innerText=Math.pow(Number(d.innerText),3); }
+function sqrt(){ d.innerText=Math.sqrt(Number(d.innerText)); }
+function sign(){ d.innerText=Number(d.innerText)*-1; }
+
+function sin(){ d.innerText=Math.sin(Number(d.innerText)*Math.PI/180).toFixed(8); }
+function cos(){ d.innerText=Math.cos(Number(d.innerText)*Math.PI/180).toFixed(8); }
+function tan(){ d.innerText=Math.tan(Number(d.innerText)*Math.PI/180).toFixed(8); }
+function asin(){ d.innerText=(Math.asin(Number(d.innerText))*180/Math.PI).toFixed(8); }
+function acos(){ d.innerText=(Math.acos(Number(d.innerText))*180/Math.PI).toFixed(8); }
+function atan(){ d.innerText=(Math.atan(Number(d.innerText))*180/Math.PI).toFixed(8); }
+
+function log(){ d.innerText=Math.log10(Number(d.innerText)).toFixed(8); }
+function ln(){ d.innerText=Math.log(Number(d.innerText)).toFixed(8); }
+
+function fact(){
+    let n=Number(d.innerText),f=1;
+    for(let i=1;i<=n;i++) f*=i;
+    d.innerText=f;
+}
+function constPi(){ d.innerText=Math.PI.toFixed(8); }
+function constE(){ d.innerText=Math.E.toFixed(8); }
+</script>
+
+</body>
+</html>
